@@ -45,6 +45,9 @@ public:
 
 	KellerLD();
 
+  /** Reads the onboard memory map to determine min and max pressure as 
+   *  well as manufacture date, mode, and customer ID.
+   */
 	void init();
 
 	/** Provide the density of the working fluid in kg/m^3. Default is for 

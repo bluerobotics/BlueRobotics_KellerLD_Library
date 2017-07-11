@@ -57,7 +57,7 @@ void KellerLD::read() {
 	uint16_t P = (Wire.read() << 8) | Wire.read();
 	uint16_t T = (Wire.read() << 8) | Wire.read();
 	
-	P_bar = (P-16384)*(P_max-P_min)/32768 + P_min;
+	P_bar = (float(P)-16384)*(P_max-P_min)/32768 + P_min + 1.0325;
 	T_degc = ((T>>4)-24)*0.05-50;
 }
 
@@ -67,6 +67,8 @@ uint16_t KellerLD::readMemoryMap(uint8_t mtp_address) {
 	Wire.beginTransmission(LD_ADDR);
 	Wire.write(mtp_address);
 	Wire.endTransmission();
+
+	delay(1); // allow for response to come in
 
 	Wire.requestFrom(LD_ADDR,3);
 	status = Wire.read();

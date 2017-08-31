@@ -40,7 +40,6 @@ THE SOFTWARE.
 KellerLD sensor;
 
 void setup() {
-  
   Serial.begin(9600);
   
   Serial.println("Starting");
@@ -49,6 +48,12 @@ void setup() {
 
   sensor.init();
   sensor.setFluidDensity(997); // kg/m^3 (freshwater, 1029 for seawater)
+
+  if (sensor.isInitialized()) {
+    Serial.println("Sensor connected.");
+  } else {
+    Serial.println("Sensor not connected.");
+  }
 }
 
 void loop() {

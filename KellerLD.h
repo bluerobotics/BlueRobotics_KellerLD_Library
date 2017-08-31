@@ -76,8 +76,14 @@ public:
 	 */
 	float altitude();
 
+	/** Return true if the sensor has been initialized and detected. */
+	bool isInitialized();
+
 private:
 	float fluidDensity;
+
+	uint16_t cust_id0;
+	uint16_t cust_id1;
 
 	float P_min;
 	float P_max;

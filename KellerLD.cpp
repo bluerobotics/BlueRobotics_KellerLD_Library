@@ -17,10 +17,7 @@ KellerLD::KellerLD() {
 
 void KellerLD::init() {
 	// Request memory map information
-	uint16_t cust_id0;
 	cust_id0 = readMemoryMap(LD_CUST_ID0);
-
-	uint16_t cust_id1;
 	cust_id1 = readMemoryMap(LD_CUST_ID1);
 
 	code = (uint32_t(cust_id1) << 16) | cust_id0;
@@ -57,7 +54,7 @@ void KellerLD::read() {
 	uint16_t P = (Wire.read() << 8) | Wire.read();
 	uint16_t T = (Wire.read() << 8) | Wire.read();
 	
-	P_bar = (float(P)-16384)*(P_max-P_min)/32768 + P_min + 1.0325;
+	P_bar = (float(P)-16384)*(P_max-P_min)/32768 + P_min + 1.01325;
 	T_degc = ((T>>4)-24)*0.05-50;
 }
 
@@ -84,9 +81,13 @@ float KellerLD::temperature() {
 }
 
 float KellerLD::depth() {
-	return (pressure(KellerLD::Pa)-101300)/(fluidDensity*9.80665);
+	return (pressure(KellerLD::Pa)-101325)/(fluidDensity*9.80665);
 }
 
 float KellerLD::altitude() {
 	return (1-pow((pressure()/1013.25),0.190284))*145366.45*.3048;
+}
+
+bool KellerLD::isInitialized() {
+	return (cust_id0 >> 10) != 63; // If not connected, equipment code == 63
 }

@@ -59,6 +59,12 @@ public:
 	 */
 	void read();
 
+	/** Checks if the attached sensor is connectored or not. */
+	bool status();
+
+	/** Returns current range of the attached sensor. */
+	float range();
+
 	/** Pressure returned in mbar or mbar*conversion rate.
 	 */
 	float pressure(float conversion = 1.0f);
@@ -79,19 +85,28 @@ public:
 	/** Return true if the sensor has been initialized and detected. */
 	bool isInitialized();
 
+	uint16_t equipment;
+	uint16_t place;
+	uint16_t file;
+
+	uint8_t mode;
+	uint16_t year;
+	uint8_t month;
+	uint8_t day;
+
+	uint32_t code;
+
+	uint16_t P;
+	float P_bar;
+	float P_min;
+	float P_max;
+
 private:
 	float fluidDensity;
+	float T_degc;
 
 	uint16_t cust_id0;
 	uint16_t cust_id1;
-
-	float P_min;
-	float P_max;
-	uint8_t mode;
-	uint32_t code;
-
-	float P_bar;
-	float T_degc;
 
 	uint16_t readMemoryMap(uint8_t mtp_address);
 };

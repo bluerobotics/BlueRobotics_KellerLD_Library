@@ -21,11 +21,17 @@ void KellerLD::init() {
 	cust_id1 = readMemoryMap(LD_CUST_ID1);
 
 	code = (uint32_t(cust_id1) << 16) | cust_id0;
+	equipment = cust_id0 >> 10;
+	place = cust_id0 & 0b000000111111111;
+	file = cust_id1;
 
 	uint16_t scaling0;
 	scaling0 = readMemoryMap(LD_SCALING0);
 
 	mode = scaling0 & 0b00000011;
+	year = scaling0 >> 11;
+	month = (scaling0 & 0b0000011110000000) >> 7;
+	day = (scaling0 & 0b0000000001111100) >> 2;
 
 	uint32_t scaling12 = (uint32_t(readMemoryMap(LD_SCALING1)) << 16) | readMemoryMap(LD_SCALING2);
 
@@ -51,7 +57,7 @@ void KellerLD::read() {
 
  	Wire.requestFrom(LD_ADDR,5);
 	status = Wire.read();
-	uint16_t P = (Wire.read() << 8) | Wire.read();
+	P = (Wire.read() << 8) | Wire.read();
 	uint16_t T = (Wire.read() << 8) | Wire.read();
 	
 	P_bar = (float(P)-16384)*(P_max-P_min)/32768 + P_min + 1.01325;
@@ -70,6 +76,18 @@ uint16_t KellerLD::readMemoryMap(uint8_t mtp_address) {
 	Wire.requestFrom(LD_ADDR,3);
 	status = Wire.read();
 	return ((Wire.read() << 8) | Wire.read());
+}
+
+bool KellerLD::status() {
+	if (equipment <= 62 ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+float KellerLD::range() {
+	return P_max-P_min;
 }
 
 float KellerLD::pressure(float conversion) {

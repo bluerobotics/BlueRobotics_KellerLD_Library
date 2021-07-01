@@ -32,6 +32,20 @@ void KellerLD::init() {
 	year = scaling0 >> 11;
 	month = (scaling0 & 0b0000011110000000) >> 7;
 	day = (scaling0 & 0b0000000001111100) >> 2;
+	
+	// handle P-mode pressure offset (to vacuum pressure)
+	float P_mode;
+	if (mode == 0) { 
+		// PA mode, Vented Gauge. Zero at atmospheric pressure
+		P_mode = 1.01325;
+	} else if (mode == 1) {
+		// PR mode, Sealed Gauge. Zero at 1.0 bar
+		P_mode = 1.0;
+	} else {
+		// PAA mode, Absolute. Zero at vacuum
+		// (or undefined mode)
+		P_mode = 0;
+	}
 
 	uint32_t scaling12 = (uint32_t(readMemoryMap(LD_SCALING1)) << 16) | readMemoryMap(LD_SCALING2);
 
@@ -60,7 +74,7 @@ void KellerLD::read() {
 	P = (Wire.read() << 8) | Wire.read();
 	uint16_t T = (Wire.read() << 8) | Wire.read();
 	
-	P_bar = (float(P)-16384)*(P_max-P_min)/32768 + P_min + 1.01325;
+	P_bar = (float(P)-16384)*(P_max-P_min)/32768 + P_min + P_mode;
 	T_degc = ((T>>4)-24)*0.05-50;
 }
 

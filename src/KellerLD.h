@@ -110,6 +110,8 @@ private:
 	uint16_t cust_id1;
 
 	uint16_t readMemoryMap(uint8_t mtp_address);
+
+    const int i2cAddress;
 };
 
 #endif

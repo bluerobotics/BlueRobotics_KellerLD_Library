@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "KellerLD.h"
 
-KellerLD sensor;
+KellerLD sensor(0x61);
 
 void setup() {
 }

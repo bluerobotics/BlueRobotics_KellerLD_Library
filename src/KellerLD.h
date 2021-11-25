@@ -45,6 +45,8 @@ public:
 
 	KellerLD();
 
+	explicit KellerLD(int i2cAddress);
+
   /** Reads the onboard memory map to determine min and max pressure as 
    *  well as manufacture date, mode, and customer ID.
    */
@@ -90,9 +92,9 @@ public:
 	uint16_t file;
 
 	uint8_t mode;
-	uint16_t year;
-	uint8_t month;
-	uint8_t day;
+	uint16_t calibrationYear;
+	uint8_t calibrationMonth;
+	uint8_t calibrationDay;
 
 	uint32_t code;
 
@@ -103,7 +105,7 @@ public:
 	float P_max;
 
 private:
-	float fluidDensity;
+	float fluidDensity = 1029;
 	float T_degc;
 
 	uint16_t cust_id0;

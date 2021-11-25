@@ -61,7 +61,7 @@ public:
 	 */
 	void read();
 
-	/** Checks if the attached sensor is connectored or not. */
+	/** Checks if the attached sensor is connected or not. */
 	bool status();
 
 	/** Returns current range of the attached sensor. */

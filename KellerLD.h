@@ -98,6 +98,7 @@ public:
 
 	uint16_t P;
 	float P_bar;
+	float P_mode;
 	float P_min;
 	float P_max;
 

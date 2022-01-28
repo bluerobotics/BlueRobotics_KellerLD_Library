@@ -34,7 +34,7 @@ void KellerLD::init() {
 	day = (scaling0 & 0b0000000001111100) >> 2;
 	
 	// handle P-mode pressure offset (to vacuum pressure)
-	float P_mode;
+
 	if (mode == 0) { 
 		// PA mode, Vented Gauge. Zero at atmospheric pressure
 		P_mode = 1.01325;

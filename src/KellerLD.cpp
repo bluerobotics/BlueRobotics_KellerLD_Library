@@ -12,11 +12,7 @@
 #define LD_SCALING4                 0x16
 
 
-KellerLD::KellerLD()
-		: i2cAddress(LD_DEFAULT_ADDR) {
-}
-
-KellerLD::KellerLD(int i2cAddress)
+KellerLD::KellerLD(int i2cAddress = LD_DEFAULT_ADDR)
 		: i2cAddress(i2cAddress) {
 }
 

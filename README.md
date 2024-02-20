@@ -15,6 +15,8 @@ Datasheet][datasheet] for sensor specification details.
 * `2.0.0`
   * Allow user-defined I²C address for the sensor
   * Calibration date fields renamed to `calibration{Year,Month,Day}`
+* `1.1.2` (2022-02-16)
+  * Fix pressure calculation; all sensors were treated as PAA
 * `1.1.1` (2021-07-01)
   * Add P-mode pressure offset handling for PR, PA and PAA type sensors,
     auto-determined based on sensor mode

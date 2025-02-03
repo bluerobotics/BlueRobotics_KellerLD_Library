@@ -36,10 +36,12 @@ void KellerLD::init() {
 	// handle P-mode pressure offset (to vacuum pressure)
 
 	if (mode == 0) { 
-		// PA mode, Vented Gauge. Zero at atmospheric pressure
+		// PR mode, Vented Gauge. Zero when front pressure == rear pressure
+		// TODO: allow updating to variable local atmosphere/enclosure pressure
+		//       from an air pressure sensor
 		P_mode = 1.01325;
 	} else if (mode == 1) {
-		// PR mode, Sealed Gauge. Zero at 1.0 bar
+		// PA mode, Sealed Gauge. Zero at 1.0 bar
 		P_mode = 1.0;
 	} else {
 		// PAA mode, Absolute. Zero at vacuum

@@ -45,6 +45,8 @@ public:
 
 	KellerLD();
 
+	explicit KellerLD(int i2cAddress);
+
   /** Reads the onboard memory map to determine min and max pressure as 
    *  well as manufacture date, mode, and customer ID.
    */
@@ -59,7 +61,7 @@ public:
 	 */
 	void read();
 
-	/** Checks if the attached sensor is connectored or not. */
+	/** Checks if the attached sensor is connected or not. */
 	bool status();
 
 	/** Returns current range of the attached sensor. */
@@ -90,9 +92,9 @@ public:
 	uint16_t file;
 
 	uint8_t mode;
-	uint16_t year;
-	uint8_t month;
-	uint8_t day;
+	uint16_t calibrationYear;
+	uint8_t calibrationMonth;
+	uint8_t calibrationDay;
 
 	uint32_t code;
 
@@ -103,13 +105,15 @@ public:
 	float P_max;
 
 private:
-	float fluidDensity;
+	float fluidDensity = 1029;
 	float T_degc;
 
 	uint16_t cust_id0;
 	uint16_t cust_id1;
 
 	uint16_t readMemoryMap(uint8_t mtp_address);
+
+    const int i2cAddress;
 };
 
 #endif

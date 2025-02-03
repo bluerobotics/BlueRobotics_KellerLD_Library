@@ -1,7 +1,7 @@
 #include "KellerLD.h"
 #include <Wire.h>
 
-#define LD_ADDR                     0x40
+#define LD_DEFAULT_ADDR             0x40
 #define LD_REQUEST                  0xAC
 #define LD_CUST_ID0                 0x00
 #define LD_CUST_ID1                 0x01
@@ -11,8 +11,9 @@
 #define LD_SCALING3                 0x15
 #define LD_SCALING4                 0x16
 
-KellerLD::KellerLD() {
-	fluidDensity = 1029;
+
+KellerLD::KellerLD(int i2cAddress = LD_DEFAULT_ADDR)
+		: i2cAddress(i2cAddress) {
 }
 
 void KellerLD::init() {
@@ -29,10 +30,10 @@ void KellerLD::init() {
 	scaling0 = readMemoryMap(LD_SCALING0);
 
 	mode = scaling0 & 0b00000011;
-	year = scaling0 >> 11;
-	month = (scaling0 & 0b0000011110000000) >> 7;
-	day = (scaling0 & 0b0000000001111100) >> 2;
-	
+	calibrationYear = scaling0 >> 11;
+	calibrationMonth = (scaling0 & 0b0000011110000000) >> 7;
+	calibrationDay = (scaling0 & 0b0000000001111100) >> 2;
+
 	// handle P-mode pressure offset (to vacuum pressure)
 
 	if (mode == 0) { 
@@ -51,11 +52,11 @@ void KellerLD::init() {
 
 	uint32_t scaling12 = (uint32_t(readMemoryMap(LD_SCALING1)) << 16) | readMemoryMap(LD_SCALING2);
 
-	P_min = *reinterpret_cast<float*>(&scaling12);
+	P_min = *reinterpret_cast<float *>(&scaling12);
 
 	uint32_t scaling34 = (uint32_t(readMemoryMap(LD_SCALING3)) << 16) | readMemoryMap(LD_SCALING4);
 
-	P_max = *reinterpret_cast<float*>(&scaling34);
+	P_max = *reinterpret_cast<float *>(&scaling34);
 }
 
 void KellerLD::setFluidDensity(float density) {
@@ -65,37 +66,37 @@ void KellerLD::setFluidDensity(float density) {
 void KellerLD::read() {
 	uint8_t status;
 
-	Wire.beginTransmission(LD_ADDR);
+	Wire.beginTransmission(i2cAddress);
 	Wire.write(LD_REQUEST);
 	Wire.endTransmission();
 
 	delay(9); // Max conversion time per datasheet
 
- 	Wire.requestFrom(LD_ADDR,5);
+	Wire.requestFrom(i2cAddress, 5);
 	status = Wire.read();
 	P = (Wire.read() << 8) | Wire.read();
 	uint16_t T = (Wire.read() << 8) | Wire.read();
-	
-	P_bar = (float(P)-16384)*(P_max-P_min)/32768 + P_min + P_mode;
-	T_degc = ((T>>4)-24)*0.05-50;
+
+	P_bar = (float(P) - 16384) * (P_max - P_min) / 32768 + P_min + P_mode;
+	T_degc = ((T >> 4) - 24) * 0.05 - 50;
 }
 
 uint16_t KellerLD::readMemoryMap(uint8_t mtp_address) {
 	uint8_t status;
 
-	Wire.beginTransmission(LD_ADDR);
+	Wire.beginTransmission(i2cAddress);
 	Wire.write(mtp_address);
 	Wire.endTransmission();
 
 	delay(1); // allow for response to come in
 
-	Wire.requestFrom(LD_ADDR,3);
+	Wire.requestFrom(i2cAddress, 3);
 	status = Wire.read();
 	return ((Wire.read() << 8) | Wire.read());
 }
 
 bool KellerLD::status() {
-	if (equipment <= 62 ) {
+	if (equipment <= 62) {
 		return true;
 	} else {
 		return false;
@@ -103,11 +104,11 @@ bool KellerLD::status() {
 }
 
 float KellerLD::range() {
-	return P_max-P_min;
+	return P_max - P_min;
 }
 
 float KellerLD::pressure(float conversion) {
-	return P_bar*1000.0f*conversion;
+	return P_bar * 1000.0f * conversion;
 }
 
 float KellerLD::temperature() {
@@ -115,11 +116,11 @@ float KellerLD::temperature() {
 }
 
 float KellerLD::depth() {
-	return (pressure(KellerLD::Pa)-101325)/(fluidDensity*9.80665);
+	return (pressure(KellerLD::Pa) - 101325) / (fluidDensity * 9.80665);
 }
 
 float KellerLD::altitude() {
-	return (1-pow((pressure()/1013.25),0.190284))*145366.45*.3048;
+	return (1 - pow((pressure() / 1013.25), 0.190284)) * 145366.45 * .3048;
 }
 
 bool KellerLD::isInitialized() {
